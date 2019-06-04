@@ -1,0 +1,4 @@
+.idea
+*.sql
+*.hdlicense
+node_modules
