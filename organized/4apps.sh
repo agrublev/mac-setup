@@ -140,10 +140,13 @@ latest_github_asset() {
 }
 
 # Install the download entries from app-catalog.sh that were picked in the
-# setup checklist; the cask entries are installed by 2brew.sh.
+# setup checklist; cask and section entries are installed elsewhere.
 for entry in "${APP_CATALOG[@]}"; do
     IFS='|' read -r app_name app_kind app_bundle app_url <<< "$entry"
-    [[ "$app_kind" == cask ]] && continue
+    case "$app_kind" in
+        dmg|zip|tar) ;;
+        *) continue ;;
+    esac
     app_selected "$app_name" || continue
 
     if [[ "$app_url" == github:* ]]; then

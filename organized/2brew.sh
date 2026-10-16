@@ -32,7 +32,6 @@ FORMULAE=(
     git
     node
     python
-    python3
     wget
     zsh
     zsh-completions

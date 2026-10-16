@@ -13,6 +13,10 @@ for app in "App Store" \
     "Maps" \
     "Photos" \
     "Music" \
+    "Freeform" \
+    "TV" \
+    "Apple TV" \
+    "Apple Music" \
     "News" \
     "FaceTime" \
     "iTunes" \
@@ -31,6 +35,8 @@ osascript -e 'delay 3' -e 'tell Application "Dock"' -e 'quit' -e 'end tell'
 # Configure scrolling and trackpad behavior.
 sub "Configuring scrolling and trackpad"
 defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+# Turn off natural scrolling (one setting covers mouse and trackpad). macOS
+# only reads it at login, so it takes effect after logging out and back in.
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1

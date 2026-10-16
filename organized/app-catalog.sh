@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 # Apps offered in the setup checklist. setup.sh sources this before any
-# section runs; 2brew.sh installs the picked casks and 4apps.sh the picked
-# downloads.
+# section runs; 2brew.sh installs the picked casks, 4apps.sh the picked
+# downloads, and "section" entries are installed by their own section file.
 #
 # Each entry is "Name|kind|target|source":
 #   cask           Name|cask|<cask token>
 #   dmg, zip, tar  Name|<archive type>|<app bundle>|<download URL>
+#   section        Name|section|<section file that installs it>
 # A source of "github:owner/repo" downloads the newest release asset of that
 # archive type instead of a fixed URL.
 APP_CATALOG=(
+    "Claude Code|section|1claude.sh"
     "iTerm2|cask|iterm2"
     "Visual Studio Code|cask|visual-studio-code"
     "WebStorm|cask|webstorm"
