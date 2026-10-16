@@ -31,6 +31,7 @@ brew update
 FORMULAE=(
     git
     node
+    bun
     python
     wget
     zsh
