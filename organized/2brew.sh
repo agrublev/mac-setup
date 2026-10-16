@@ -66,8 +66,10 @@ if command -v zsh >/dev/null 2>&1; then
     BREW_PREFIX="$(brew --prefix)"
     chmod go-w "$BREW_PREFIX/share"
     chmod -R go-w "$BREW_PREFIX/share/zsh"
-    FPATH="$BREW_PREFIX/share/zsh-completions:$FPATH" \
-        zsh -c 'rm -f "$HOME/.zcompdump"; autoload -Uz compinit; compinit'
+    # Extend fpath inside zsh. Exporting FPATH from bash replaces zsh's default
+    # function path, so compinit itself can no longer be found.
+    zsh -c 'fpath=("$1/share/zsh-completions" $fpath); rm -f "$HOME/.zcompdump"; autoload -Uz compinit; compinit' \
+        zsh "$BREW_PREFIX"
 fi
 
 sub "Cleaning up Homebrew"
