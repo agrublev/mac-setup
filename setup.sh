@@ -51,10 +51,10 @@ brew cleanup
 
 echo "Installing cask..."
 
-brew cask install virtualbox
+# brew cask install virtualbox
 
-brew cask install vagrant
-vagrant plugin install vagrant-vbguest
+# brew cask install vagrant
+# vagrant plugin install vagrant-vbguest
 
 
 
@@ -63,10 +63,7 @@ vagrant plugin install vagrant-vbguest
 
 echo "Installing useful apps"
 
-curl -s 'https://macapps.link/en/firefox-chrome-skitch-github-sequelpro-phpstorm-vscode-iterm-transmission-cord-unarchiver-1password-filezilla-teamviewer-caffeine-vlc-skype' | sh
-
-
-
+curl -s 'https://api.macapps.link/en/chrome-github-sequelpro-vscode-gitkraken-iterm-unarchiver-1password-vlc-handbrake' | sh
 
 
 for app in "App Store"\
@@ -79,6 +76,8 @@ for app in "App Store"\
 	"Reminders"\
 	"Maps"\
 	"Photos"\
+	"Music"\
+	"News"\
 	"FaceTime"\
 	"iTunes"\
 	"iBooks"\
