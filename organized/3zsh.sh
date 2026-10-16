@@ -32,9 +32,9 @@ BOTTOM_END='# <<< 2zsh.sh aliases/history <<<'
 
 read -r -d '' TOP_BLOCK <<'ZSH_TOP' || true
 # >>> 2zsh.sh plugins (managed) >>>
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+[[ -r /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -r /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh ]] && source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
 # <<< 2zsh.sh plugins <<<
 ZSH_TOP

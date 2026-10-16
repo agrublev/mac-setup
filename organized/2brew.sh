@@ -37,7 +37,7 @@ FORMULAE=(
     zsh-completions
     zsh-syntax-highlighting
     zsh-autosuggestions
-    zsh-npm-scripts-autocomplete
+    zsh-autocomplete
     yarn
 )
 

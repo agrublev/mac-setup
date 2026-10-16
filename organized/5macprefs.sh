@@ -1,36 +1,55 @@
 #!/usr/bin/env bash
 
-# Remove selected built-in apps from the Dock.
+# Built-in apps to remove from the Dock, by bundle ID so the match works in
+# any system language.
+DOCK_REMOVE=(
+    com.apple.AppStore            # App Store
+    com.apple.Safari              # Safari
+    com.apple.mail                # Mail
+    com.apple.news                # News
+    com.apple.AddressBook         # Contacts
+    com.apple.iCal                # Calendar
+    com.apple.MobileSMS           # Messages
+    com.apple.reminders           # Reminders
+    com.apple.Maps                # Maps
+    com.apple.Photos              # Photos
+    com.apple.Music               # Music
+    com.apple.freeform            # Freeform
+    com.apple.TV                  # TV
+    com.apple.FaceTime            # FaceTime
+    com.apple.Notes               # Notes
+    com.apple.iTunes              # iTunes (older macOS)
+    com.apple.iBooksX             # Books
+    com.apple.siri.launcher       # Siri
+    com.apple.launchpad.launcher  # Launchpad
+)
+
+# Delete every persistent-apps entry in the Dock plist $1 whose bundle ID is
+# in DOCK_REMOVE. Indexes are 0-based and shift down after each delete.
+remove_dock_apps() {
+    local plist="$1" i=0 bundle_id
+    while /usr/libexec/PlistBuddy -c "Print persistent-apps:$i" "$plist" >/dev/null 2>&1; do
+        bundle_id="$(/usr/libexec/PlistBuddy \
+            -c "Print persistent-apps:$i:tile-data:bundle-identifier" "$plist" 2>/dev/null)"
+        if [[ -n "$bundle_id" && " ${DOCK_REMOVE[*]} " == *" $bundle_id "* ]]; then
+            /usr/libexec/PlistBuddy -c "Print persistent-apps:$i:tile-data:file-label" "$plist"
+            /usr/libexec/PlistBuddy -c "Delete persistent-apps:$i" "$plist"
+        else
+            i=$((i + 1))
+        fi
+    done
+}
+
 sub "Removing built-in apps from the Dock"
-for app in "App Store" \
-    "Safari" \
-    "Mail" \
-    "News" \
-    "Contacts" \
-    "Calendar" \
-    "Messages" \
-    "Reminders" \
-    "Maps" \
-    "Photos" \
-    "Music" \
-    "Freeform" \
-    "TV" \
-    "Apple TV" \
-    "Apple Music" \
-    "News" \
-    "FaceTime" \
-    "iTunes" \
-    "iBooks" \
-    "Siri" \
-    "Launchpad"; do
-    echo "$app"
-    dloc="$(defaults read com.apple.dock persistent-apps | grep file-label | awk -v app="$app" '$0 ~ app {print NR; exit}')"
-    if [[ -n "$dloc" ]]; then
-        /usr/libexec/PlistBuddy -c "Delete persistent-apps:$dloc" \
-            "$HOME/Library/Preferences/com.apple.dock.plist"
-    fi
-done
-osascript -e 'delay 3' -e 'tell Application "Dock"' -e 'quit' -e 'end tell'
+# Edit an exported copy and import it back. Writing straight to the file in
+# ~/Library/Preferences bypasses the preferences cache, which then serves
+# stale data and can overwrite the edit.
+DOCK_PLIST="$(mktemp "${TMPDIR:-/tmp}/dock.XXXXXX")"
+defaults export com.apple.dock "$DOCK_PLIST"
+remove_dock_apps "$DOCK_PLIST"
+defaults import com.apple.dock "$DOCK_PLIST"
+rm -f "$DOCK_PLIST"
+killall Dock
 
 # Configure scrolling and trackpad behavior.
 sub "Configuring scrolling and trackpad"
