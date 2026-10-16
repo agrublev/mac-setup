@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# Install the Xcode command-line tools and Claude Code.
-sub "Installing Xcode command-line tools"
-xcode-select --install
-ok "git installed"
-
+# Install Claude Code. The Xcode command-line tools come with Homebrew in the
+# next step.
 sub "installing Claude Code..."
 curl -fsSL https://claude.ai/install.sh | bash
 sub "Installing Claude Code statusline"

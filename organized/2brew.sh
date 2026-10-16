@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-# Install Homebrew when it is not already available.
+# Install Homebrew when it is not already available. Its installer also
+# installs the Xcode command-line tools (git, clang), which the oh-my-zsh step
+# needs, and waits for them to finish.
 if ! command -v brew >/dev/null 2>&1; then
     sub "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

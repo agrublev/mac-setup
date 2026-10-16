@@ -23,6 +23,8 @@ fi
 ZSHRC="$HOME/.zshrc"
 [[ -f "$ZSHRC" ]] || touch "$ZSHRC"
 
+# The markers keep the old "2zsh.sh" name so re-runs still find and replace
+# blocks written before this file was renamed.
 TOP_BEGIN='# >>> 2zsh.sh plugins (managed) >>>'
 TOP_END='# <<< 2zsh.sh plugins <<<'
 BOTTOM_BEGIN='# >>> 2zsh.sh aliases/history (managed) >>>'

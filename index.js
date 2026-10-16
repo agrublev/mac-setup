@@ -2,9 +2,9 @@ const inquirer = require("inquirer");
 const chalk = require("chalk");
 const choices = [
     // {name: `${chalk.bold.green("test")}`, value: "organized/0test.sh"},
-    {name: `${chalk.bold.green("xcode")}`, value: "organized/1xcode.sh"},
-    {name: `${chalk.bold.green("zsh")}`, value: "organized/2zsh.sh"},
-    {name: `${chalk.bold.green("brew")}`, value: "organized/3brew.sh"},
+    {name: `${chalk.bold.green("claude")}`, value: "organized/1claude.sh"},
+    {name: `${chalk.bold.green("brew")}`, value: "organized/2brew.sh"},
+    {name: `${chalk.bold.green("zsh")}`, value: "organized/3zsh.sh"},
     {name: `${chalk.bold.green("apps")}`, value: "organized/4apps.sh"},
     {name: `${chalk.bold.green("macprefs")}`, value: "organized/5macprefs.sh"}];
 

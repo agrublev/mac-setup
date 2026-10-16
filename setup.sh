@@ -180,11 +180,11 @@ run_section() {
 }
 
 SECTIONS=(
-    "1xcode.sh"
-    "2zsh.sh"
-    "3brew.sh"
+    "2brew.sh"
+    "3zsh.sh"
     "4apps.sh"
     "5macprefs.sh"
+    "1claude.sh"
 )
 
 progress_start "${#SECTIONS[@]}"
