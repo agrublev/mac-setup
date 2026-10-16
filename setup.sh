@@ -28,6 +28,82 @@ fail() { printf '  \033[1;31m✗\033[0m %s\n' "$1"; }
 info() { printf '  \033[1;36m→\033[0m %s\n' "$1"; }
 warn() { printf '  \033[1;33m!\033[0m %s\n' "$1"; }
 
+# ── Checkbox picker
+# choose_many "Question" item... lists the items with every box checked.
+# ↑/↓ (or j/k) move, space toggles, a checks/unchecks all, enter confirms.
+# The checked items are left in PICKED. Written for the bash 3.2 that ships
+# with macOS, since this runs before Homebrew exists.
+choose_many() {
+  local prompt="$1"; shift
+  local items=("$@") checked=() count=$# cursor=0 i key rest all tty_state
+  for ((i = 0; i < count; i++)); do checked[i]=1; done
+
+  printf '\n\033[1;36m  ? \033[1;37m%s\033[0m\n' "$prompt"
+  printf '\033[2m    ↑/↓ move · space toggle · a all/none · enter confirm\033[0m\n'
+  tty_state="$(stty -g)"
+  # No echo or line buffering, so stray keys can't scribble over the list.
+  stty -echo -icanon
+  printf '\033[?25l'
+  trap 'stty "$tty_state"; printf "\033[?25h\n"; exit 130' INT
+  _picker_draw
+
+  while :; do
+    IFS= read -rsn1 key
+    if [[ "$key" == $'\033' ]]; then
+      IFS= read -rsn2 -t 1 rest
+      key+="$rest"
+    fi
+    case "$key" in
+      $'\033[A'|$'\033OA'|k) cursor=$(( (cursor + count - 1) % count )) ;;
+      $'\033[B'|$'\033OB'|j) cursor=$(( (cursor + 1) % count )) ;;
+      ' ') checked[cursor]=$(( !checked[cursor] )) ;;
+      a)
+        # Check everything unless everything is already checked.
+        all=0
+        for ((i = 0; i < count; i++)); do (( checked[i] )) || all=1; done
+        for ((i = 0; i < count; i++)); do checked[i]=$all; done
+        ;;
+      '') break ;;
+      *) continue ;;
+    esac
+    printf '\033[%dA' "$count"
+    _picker_draw
+  done
+
+  stty "$tty_state"
+  printf '\033[?25h'
+  trap - INT
+  PICKED=()
+  for ((i = 0; i < count; i++)); do
+    (( checked[i] )) && PICKED+=("${items[i]}")
+  done
+}
+
+# Draws one frame of the list in a single write. Reads choose_many's locals
+# (items, checked, count, cursor) through bash's dynamic scoping.
+_picker_draw() {
+  local i box e=$'\033' out=""
+  for ((i = 0; i < count; i++)); do
+    box="[ ]"
+    (( checked[i] )) && box="${e}[1;32m[x]${e}[0m"
+    if (( i == cursor )); then
+      out+="  ${e}[1;36m❯${e}[0m ${box} ${e}[1;37m${items[i]}${e}[0m${e}[K"$'\n'
+    else
+      out+="    ${box} ${items[i]}${e}[K"$'\n'
+    fi
+  done
+  printf '%s' "$out"
+}
+
+# True when $1 was checked in the app picker.
+app_selected() {
+  local name
+  for name in "${SELECTED_APPS[@]}"; do
+    [[ "$name" == "$1" ]] && return 0
+  done
+  return 1
+}
+
 # ── Sticky progress bar
 # Reserves the bottom terminal row with a scroll region; a background ticker
 # redraws it from a state file so section output scrolls above it. Skipped
@@ -160,6 +236,21 @@ cat << 'EOF'
 EOF
 printf '\033[0m\n'
 sleep 1
+
+# Pick the apps up front so the rest of the setup runs unattended. Without a
+# terminal (e.g. output piped to a log) every app in the catalog is installed.
+source "$SECTION_DIR/app-catalog.sh"
+APP_NAMES=()
+for entry in "${APP_CATALOG[@]}"; do
+    APP_NAMES+=("${entry%%|*}")
+done
+if [[ -t 0 && -t 1 ]]; then
+    choose_many "Which apps should be installed?" "${APP_NAMES[@]}"
+    SELECTED_APPS=("${PICKED[@]}")
+else
+    SELECTED_APPS=("${APP_NAMES[@]}")
+fi
+ok "${#SELECTED_APPS[@]} of ${#APP_NAMES[@]} apps selected"
 
 run_section() {
     local section="$1"

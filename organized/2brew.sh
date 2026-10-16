@@ -42,21 +42,23 @@ FORMULAE=(
     yarn
 )
 
-# Desktop applications are casks.
-CASKS=(
-    iterm2
-    visual-studio-code
-    webstorm
-    vlc
-    the-unarchiver
-    caffeine
-)
+# Desktop applications are the casks from app-catalog.sh that were picked in
+# the setup checklist.
+CASKS=()
+for entry in "${APP_CATALOG[@]}"; do
+    IFS='|' read -r app_name app_kind app_cask _ <<< "$entry"
+    if [[ "$app_kind" == cask ]] && app_selected "$app_name"; then
+        CASKS+=("$app_cask")
+    fi
+done
 
 sub "Installing Homebrew formulae (git, node, python, zsh plugins...)"
 brew install "${FORMULAE[@]}"
 
-sub "Installing Homebrew casks (iTerm2, VS Code, WebStorm...)"
-brew install --cask "${CASKS[@]}"
+if (( ${#CASKS[@]} )); then
+    sub "Installing selected Homebrew casks"
+    brew install --cask "${CASKS[@]}"
+fi
 
 # Rebuild the Zsh completion cache after installing the completion packages.
 sub "Rebuilding Zsh completion cache"

@@ -130,28 +130,31 @@ installApp() {
     fi
 }
 
-url="$(curl -fsSL "https://api.github.com/repos/rxhanson/Rectangle/releases/latest" | jq -r '.assets[] | select(.name | endswith(".dmg")) | .browser_download_url')"
+# Print the download URL of the newest release asset ending in ".$2" for the
+# GitHub repo $1 (owner/name).
+latest_github_asset() {
+    curl -fsSL "https://api.github.com/repos/$1/releases/latest" \
+        | grep -o "\"browser_download_url\": *\"[^\"]*\\.$2\"" \
+        | head -n 1 \
+        | sed 's/.*"\(https[^"]*\)"/\1/'
+}
 
-installApp "dmg" "Chrome" "Google Chrome.app" \
-    "https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg"
-installApp "zip" "GitHub" "GitHub Desktop.app" \
-    "https://central.github.com/deployments/desktop/desktop/latest/darwin"
-installApp "dmg" "SequelPro" "Sequel Pro.app" \
-    "https://sequelpro.com/release?do=download-latest"
-installApp "zip" "Sketch" "Sketch.app" \
-    "https://www.sketchapp.com/download/sketch.zip"
-installApp "zip" "Postman" "Postman.app" \
-    "https://dl.pstmn.io/download/latest/osx"
-installApp "dmg" "Transmission" "Transmission.app" \
-    "https://github.com/transmission/transmission-releases/raw/master/Transmission-3.00.dmg"
-installApp "zip" "1Password" "1Password 7.app" \
-    "https://cachefly-origin.agilebits.com/dist/1P/mac7/1Password-7.10.4.zip"
-installApp "zip" "ForkLift" "ForkLift.app" \
-    "https://download.binarynights.com/ForkLift3.zip"
-installApp "dmg" "Etcher" "balenaEtcher.app" \
-    "https://github.com/balena-io/etcher/releases/download/v1.7.2/balenaEtcher-1.7.2.dmg"
-installApp "dmg" "HandBrake" "HandBrake.app" \
-    "https://download.handbrake.fr/releases/1.1.1/HandBrake-1.1.1.dmg"
-installApp "dmg" "Rectangle" "Rectangle.app" "$(url)"
+# Install the download entries from app-catalog.sh that were picked in the
+# setup checklist; the cask entries are installed by 2brew.sh.
+for entry in "${APP_CATALOG[@]}"; do
+    IFS='|' read -r app_name app_kind app_bundle app_url <<< "$entry"
+    [[ "$app_kind" == cask ]] && continue
+    app_selected "$app_name" || continue
+
+    if [[ "$app_url" == github:* ]]; then
+        app_url="$(latest_github_asset "${app_url#github:}" "$app_kind")"
+        if [[ -z "$app_url" ]]; then
+            printf 'No .%s in the latest %s release; skipping.\n' \
+                "$app_kind" "$app_name" >&2
+            continue
+        fi
+    fi
+    installApp "$app_kind" "$app_name" "$app_bundle" "$app_url"
+done
 
 divider
