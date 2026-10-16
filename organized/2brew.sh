@@ -5,7 +5,14 @@
 # needs, and waits for them to finish.
 if ! command -v brew >/dev/null 2>&1; then
     sub "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    # NONINTERACTIVE skips the "Press RETURN" prompt, but then the installer
+    # only uses cached sudo credentials. Ask for the password once and keep it
+    # fresh while the command-line tools download (sudo forgets after 5 min).
+    sudo -v
+    while kill -0 "$$" 2>/dev/null; do sudo -n true; sleep 60; done 2>/dev/null &
+    SUDO_KEEPALIVE_PID=$!
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    kill "$SUDO_KEEPALIVE_PID" 2>/dev/null
 fi
 
 # Add the standard Homebrew location to this shell after a fresh install.
