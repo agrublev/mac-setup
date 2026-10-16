@@ -1,0 +1,73 @@
+# ---------------------------------------------------------------------------
+# AT TOP OF FILE
+# -----
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/opt/homebrew/share/zsh-syntax-highlighting/highlighters
+
+# ---------------------------------------------------------------------------
+# Package-manager aliases and helpers
+# ---------------------------------------------------------------------------
+alias y="yarn"
+alias ys="yarn start"
+alias yr="yarn run"
+alias yb="yarn build"
+alias yd="yarn add -D"
+alias ya="yarn add -W"
+alias bb="bun run build"
+alias bd="bun add -d"
+
+unalias b 2>/dev/null
+b() {
+  if [[ $# -eq 0 ]]; then
+    bun install
+    return
+  fi
+
+  case "$1" in
+    x|repl|exec|add|remove|update|audit|dedupe|prune|outdated|link|unlink|publish|patch|pm|info|why)
+      bun "$@"
+      ;;
+    *)
+      bun run "$@"
+      ;;
+  esac
+}
+
+bs() {
+  if [[ -f package.json ]] && grep -q '"start"[[:space:]]*:' package.json; then
+    bun run start
+  else
+    bun run dev
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# General command aliases and helpers
+# ---------------------------------------------------------------------------
+alias c="claude"
+alias o="opencode --yolo"
+alias m="muse --yolo"
+
+
+# ---------------------------------------------------------------------------
+# History and key bindings
+# ---------------------------------------------------------------------------
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+unsetopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_IGNORE_DUPS
+
+# Restore normal up/down arrow history navigation (zsh-autocomplete overrides it)
+bindkey '^[[A' up-line-or-history
+bindkey '^[OA' up-line-or-history
+bindkey '^[[B' down-line-or-history
+bindkey '^[OB' down-line-or-history
+
+# Make Tab / Shift-Tab cycle through zsh-autocomplete suggestions
+bindkey '\t' menu-select "$terminfo[kcbt]" menu-select
+bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
