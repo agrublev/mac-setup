@@ -6,7 +6,8 @@ const choices = [
     {name: `${chalk.bold.green("brew")}`, value: "organized/2brew.sh"},
     {name: `${chalk.bold.green("zsh")}`, value: "organized/3zsh.sh"},
     {name: `${chalk.bold.green("apps")}`, value: "organized/4apps.sh"},
-    {name: `${chalk.bold.green("macprefs")}`, value: "organized/5macprefs.sh"}];
+    {name: `${chalk.bold.green("macprefs")}`, value: "organized/5macprefs.sh"},
+    {name: `${chalk.bold.green("iterm")}`, value: "organized/6iterm.sh"}];
 
 const path = require("path");
 const spawn = require("cross-spawn");

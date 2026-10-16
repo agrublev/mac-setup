@@ -275,6 +275,7 @@ SECTIONS=(
     "3zsh.sh"
     "4apps.sh"
     "5macprefs.sh"
+    "6iterm.sh"
     "1claude.sh"
 )
 

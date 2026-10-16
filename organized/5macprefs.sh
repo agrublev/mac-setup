@@ -57,6 +57,7 @@ defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
 # Turn off natural scrolling (one setting covers mouse and trackpad). macOS
 # only reads it at login, so it takes effect after logging out and back in.
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+defaults write -g com.apple.swipescrolldirection -bool false
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
